@@ -115,26 +115,47 @@
 
 <script>
     const quizData = [
-        // Задачи 4.9 - 4.10
-        { q: "Средний вес (AVG weight) <= 0.7 по категориям", a: "HAVING AVG(weight) <= 0.7", variants: ["WHERE weight <= 0.7", "HAVING AVG(weight) <= 0.7", "GROUP BY weight <= 0.7", "LIMIT 0.7"] },
-        { q: "Средняя цена (AVG price) > 200 по производителям", a: "HAVING AVG(price) > 200", variants: ["WHERE price > 200", "HAVING AVG(price) > 200", "ORDER BY price", "SUM(price) > 200"] },
-        { q: "Общая сумма (SUM price) < 250", a: "HAVING SUM(price) < 250", variants: ["HAVING SUM(price) < 250", "WHERE SUM < 250", "GROUP BY 250", "SELECT SUM < 250"] },
-        { q: "Макс. рейтинг (MAX rating) >= 4.0", a: "HAVING MAX(rating) >= 4.0", variants: ["WHERE rating >= 4.0", "ORDER BY 4.0", "HAVING MAX(rating) >= 4.0", "DISTINCT 4.0"] },
-        
-        // База
-        { q: "Какая команда фильтрует ГРУППЫ?", a: "HAVING", variants: ["WHERE", "HAVING", "GROUP BY", "FILTER"] },
-        { q: "Какая команда удаляет таблицу СОВСЕМ?", a: "DROP TABLE", variants: ["DELETE", "TRUNCATE", "DROP TABLE", "REMOVE"] },
-        { q: "Выбор только уникальных значений", a: "DISTINCT", variants: ["UNIQUE", "SINGLE", "DISTINCT", "ONLY"] },
-        { q: "Сортировка от большего к меньшему", a: "ORDER BY ... DESC", variants: ["ORDER BY ... ASC", "SORT BY DESC", "ORDER BY ... DESC", "GROUP BY DESC"] },
-        { q: "Добавление новой строки", a: "INSERT INTO", variants: ["ADD ROW", "INSERT INTO", "UPDATE", "CREATE"] },
-        { q: "Обновление данных", a: "UPDATE", variants: ["CHANGE", "SET", "MODIFY", "UPDATE"] },
-        { cmd: "COUNT()", q: "Что делает функция COUNT()?", a: "Считает количество строк", variants: ["Считает сумму", "Считает среднее", "Считает количество строк", "Ищет максимум"] },
-        { q: "Поиск по шаблону (например, имен на 'А')", a: "LIKE", variants: ["IN", "LIKE", "BETWEEN", "SEARCH"] },
-        { q: "Проверка на пустое значение", a: "IS NULL", variants: ["== NULL", "EMPTY", "IS NULL", "IF NULL"] },
-        { q: "Объединение таблиц по совпадениям", a: "INNER JOIN", variants: ["OUTER JOIN", "INNER JOIN", "UNION", "LEFT JOIN"] },
-        { q: "Очистка данных БЕЗ удаления таблицы", a: "TRUNCATE", variants: ["DELETE ALL", "DROP", "TRUNCATE", "CLEAR"] },
-        { q: "Псевдоним для колонки", a: "AS", variants: ["NAME", "ALIAS", "AS", "SET"] }
-    ];
+        // Новые вопросы по твоим задачам №1-№4
+{ 
+    q: "Задача №1: Сгруппировать по категориям и найти средний вес (AVG weight) <= 0.7", 
+    a: "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
+    variants: [
+        "WHERE weight <= 0.7 GROUP BY category_id", 
+        "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
+        "ORDER BY weight LIMIT 0.7", 
+        "GROUP BY weight HAVING category_id <= 0.7"
+    ] 
+},
+{ 
+    q: "Задача №2: Средняя цена (AVG price) > 200 для каждого производителя (manufacturer_id)", 
+    a: "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
+    variants: [
+        "GROUP BY price HAVING AVG(manufacturer_id) > 200", 
+        "WHERE price > 200 GROUP BY manufacturer_id", 
+        "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
+        "SELECT price > 200 FROM products"
+    ] 
+},
+{ 
+    q: "Задача №3: Общая стоимость (SUM price) по категориям меньше 250", 
+    a: "GROUP BY category_id HAVING SUM(price) < 250", 
+    variants: [
+        "GROUP BY category_id HAVING SUM(price) < 250", 
+        "WHERE SUM(price) < 250 GROUP BY category_id", 
+        "HAVING COUNT(price) < 250", 
+        "GROUP BY price HAVING SUM(category_id) < 250"
+    ] 
+},
+{ 
+    q: "Задача №4: Макс. рейтинг (MAX rating) по производителям минимум 4.0", 
+    a: "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
+    variants: [
+        "GROUP BY rating HAVING MAX(manufacturer_id) >= 4.0", 
+        "HAVING MAX(rating) > 4.0", 
+        "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
+        "WHERE rating >= 4.0 GROUP BY manufacturer_id"
+    ] 
+}
 
     let current = 0;
     let locked = false;
