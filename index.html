@@ -3,164 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SQL Quiz Mobile</title>
+    <title>SQL Quiz Pro - Anki Style</title>
     <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #161b22;
+            --text-color: #ffffff;
+            --accent-color: #58a6ff;
+            --correct-color: #238636;
+            --wrong-color: #da3633;
+            --border-color: #30363d;
+        }
+
         body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
             -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
         }
 
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 15px 20px;
             border-bottom: 1px solid #222;
+            background: #000;
+        }
+
+        #counter {
+            color: var(--accent-color);
+            font-weight: bold;
             font-size: 1.1rem;
         }
 
-        #counter { color: #58a6ff; font-weight: bold; }
-
-        .question-area {
+        /* Основная часть */
+        .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
             padding: 20px;
+            overflow-y: auto;
+        }
+
+        #question-box {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 25px;
         }
 
         #question-text {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.2;
+            line-height: 1.3;
+            margin-bottom: 10px;
         }
 
+        .hint {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        /* Сетка вариантов */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            max-width: 500px;
-            padding: 10px;
+            max-width: 600px;
         }
 
         .opt-btn {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             color: white;
-            padding: 18px;
-            font-size: 1.2rem;
-            border-radius: 10px;
+            padding: 20px;
+            font-size: 1.1rem;
+            border-radius: 12px;
             cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
+            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
             font-family: 'Courier New', monospace;
+            position: relative;
         }
 
-        .correct { background-color: #238636 !important; border-color: #2ea043; }
-        .wrong { background-color: #da3633 !important; border-color: #f85149; opacity: 0.7; }
+        .opt-btn:active {
+            transform: scale(0.98);
+        }
 
+        /* Цвета ответов */
+        .correct { 
+            background-color: var(--correct-color) !important; 
+            border-color: #3fb950 !important;
+            box-shadow: 0 0 15px rgba(35, 134, 54, 0.4);
+        }
+
+        .wrong { 
+            background-color: var(--wrong-color) !important; 
+            border-color: #f85149 !important;
+            opacity: 0.8;
+        }
+
+        /* Футер */
         .footer {
             padding: 20px;
-            height: 90px;
+            border-top: 1px solid #222;
             display: flex;
             justify-content: center;
-            align-items: center;
         }
 
         #next-btn {
             width: 100%;
-            max-width: 500px;
-            height: 60px;
+            max-width: 600px;
+            height: 65px;
             background-color: #1f6feb;
             border: none;
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            border-radius: 12px;
-            display: none; /* Скрыта, пока не ответишь верно */
+            border-radius: 14px;
+            display: none; /* Скрыто до правильного ответа */
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(31, 111, 235, 0.3);
         }
 
+        /* Адаптивность для мобилок */
         @media (max-width: 600px) {
-            #question-text { font-size: 1.4rem; }
-            .opt-btn { padding: 15px; font-size: 1rem; }
+            #question-text { font-size: 1.3rem; }
+            .opt-btn { padding: 15px; font-size: 0.95rem; }
+            #next-btn { height: 60px; font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div>SQL Quiz</div>
+    <div style="font-size: 1.5rem;">☰</div>
     <div id="counter">1 / 40</div>
-    <div>⋮</div>
+    <div style="font-size: 1.5rem;">⋮</div>
 </div>
 
-<div class="question-area">
-    <div id="question-text">Загрузка...</div>
+<div class="main-content">
+    <div id="question-box">
+        <div id="question-text">Загрузка вопроса...</div>
+        <div class="hint">Выберите правильный SQL-код:</div>
+    </div>
+
     <div id="options" class="options-grid">
         </div>
 </div>
 
 <div class="footer">
-    <button id="next-btn" onclick="nextQuestion()">СЛЕДУЮЩИЙ →</button>
+    <button id="next-btn" onclick="nextQuestion()">ДАЛЕЕ →</button>
 </div>
 
 <script>
     const quizData = [
-        // Новые вопросы по твоим задачам №1-№4
-{ 
-    q: "Задача №1: Сгруппировать по категориям и найти средний вес (AVG weight) <= 0.7", 
-    a: "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
-    variants: [
-        "WHERE weight <= 0.7 GROUP BY category_id", 
-        "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
-        "ORDER BY weight LIMIT 0.7", 
-        "GROUP BY weight HAVING category_id <= 0.7"
-    ] 
-},
-{ 
-    q: "Задача №2: Средняя цена (AVG price) > 200 для каждого производителя (manufacturer_id)", 
-    a: "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
-    variants: [
-        "GROUP BY price HAVING AVG(manufacturer_id) > 200", 
-        "WHERE price > 200 GROUP BY manufacturer_id", 
-        "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
-        "SELECT price > 200 FROM products"
-    ] 
-},
-{ 
-    q: "Задача №3: Общая стоимость (SUM price) по категориям меньше 250", 
-    a: "GROUP BY category_id HAVING SUM(price) < 250", 
-    variants: [
-        "GROUP BY category_id HAVING SUM(price) < 250", 
-        "WHERE SUM(price) < 250 GROUP BY category_id", 
-        "HAVING COUNT(price) < 250", 
-        "GROUP BY price HAVING SUM(category_id) < 250"
-    ] 
-},
-{ 
-    q: "Задача №4: Макс. рейтинг (MAX rating) по производителям минимум 4.0", 
-    a: "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
-    variants: [
-        "GROUP BY rating HAVING MAX(manufacturer_id) >= 4.0", 
-        "HAVING MAX(rating) > 4.0", 
-        "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
-        "WHERE rating >= 4.0 GROUP BY manufacturer_id"
-    ] 
-}
+        // ТВОИ 4 ЗАДАЧИ (ПРИОРИТЕТ)
+        { 
+            q: "№1: Сгруппировать по категориям, средний вес (AVG weight) <= 0.7", 
+            a: "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
+            variants: [
+                "WHERE weight <= 0.7 GROUP BY category_id", 
+                "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
+                "ORDER BY weight HAVING AVG <= 0.7", 
+                "GROUP BY weight HAVING category_id <= 0.7"
+            ] 
+        },
+        { 
+            q: "№2: Средняя цена (AVG price) > 200 по производителям", 
+            a: "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
+            variants: [
+                "GROUP BY price HAVING AVG(manufacturer_id) > 200", 
+                "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
+                "WHERE price > 200 GROUP BY manufacturer_id", 
+                "HAVING AVG(price) > 200"
+            ] 
+        },
+        { 
+            q: "№3: Общая стоимость (SUM price) по категориям < 250", 
+            a: "GROUP BY category_id HAVING SUM(price) < 250", 
+            variants: [
+                "GROUP BY category_id HAVING SUM(price) < 250", 
+                "WHERE SUM(price) < 250 GROUP BY category_id", 
+                "GROUP BY price HAVING category_id < 250", 
+                "SELECT SUM(price) < 250"
+            ] 
+        },
+        { 
+            q: "№4: Макс. рейтинг (MAX rating) по производителям >= 4.0", 
+            a: "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
+            variants: [
+                "ORDER BY rating DESC LIMIT 4", 
+                "WHERE rating >= 4.0 GROUP BY manufacturer_id", 
+                "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
+                "GROUP BY rating HAVING MAX >= 4.0"
+            ] 
+        },
+
+        // БАЗОВЫЕ ЗНАНИЯ SQL
+        { q: "Фильтрация ГРУПП (после GROUP BY)", a: "HAVING", variants: ["WHERE", "HAVING", "LIMIT", "ORDER"] },
+        { q: "Удаление таблицы целиком (структура + данные)", a: "DROP TABLE", variants: ["DELETE", "TRUNCATE", "DROP TABLE", "REMOVE"] },
+        { q: "Очистка данных БЕЗ удаления таблицы", a: "TRUNCATE", variants: ["DROP", "TRUNCATE", "CLEAR", "DELETE *"] },
+        { q: "Выбор только уникальных значений", a: "DISTINCT", variants: ["UNIQUE", "DISTINCT", "ONLY", "SINGLE"] },
+        { q: "Поиск по шаблону (текст)", a: "LIKE", variants: ["SEARCH", "MATCH", "LIKE", "FIND"] },
+        { q: "Сортировка от Я до А (убывание)", a: "ORDER BY ... DESC", variants: ["ORDER BY ... ASC", "SORT DESC", "ORDER BY ... DESC", "GROUP BY DESC"] },
+        { q: "Объединение по совпадающим ключам", a: "INNER JOIN", variants: ["LEFT JOIN", "INNER JOIN", "UNION", "OUTER JOIN"] },
+        { q: "Проверка на пустую ячейку", a: "IS NULL", variants: ["== NULL", "IS EMPTY", "IS NULL", "IF NULL"] }
+    ];
 
     let current = 0;
     let locked = false;
 
-    function loadQuestion() {
+    function init() {
         locked = false;
         const data = quizData[current];
         document.getElementById('question-text').innerText = data.q;
@@ -169,35 +233,41 @@
         
         const optionsDiv = document.getElementById('options');
         optionsDiv.innerHTML = '';
+
+        // Перемешивание вариантов для интереса
+        const shuffledVariants = [...data.variants].sort(() => Math.random() - 0.5);
         
-        data.variants.forEach(v => {
+        shuffledVariants.forEach(v => {
             const btn = document.createElement('button');
             btn.className = 'opt-btn';
             btn.innerText = v;
-            btn.onclick = () => checkAnswer(btn, v);
+            btn.onclick = () => check(btn, v);
             optionsDiv.appendChild(btn);
         });
     }
 
-    function checkAnswer(btn, value) {
+    function check(btn, val) {
         if (locked) return;
-        const correctAns = quizData[current].a;
+        const correct = quizData[current].a;
         
-        if (value === correctAns) {
+        if (val === correct) {
             btn.classList.add('correct');
             document.getElementById('next-btn').style.display = 'block';
             locked = true;
+            // Вибрация (если поддерживается)
+            if (window.navigator.vibrate) window.navigator.vibrate(50);
         } else {
             btn.classList.add('wrong');
+            if (window.navigator.vibrate) window.navigator.vibrate([50, 50]);
         }
     }
 
     function nextQuestion() {
         current = (current + 1) % quizData.length;
-        loadQuestion();
+        init();
     }
 
-    window.onload = loadQuestion;
+    window.onload = init;
 </script>
 
 </body>
