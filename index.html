@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SQL Quiz Pro - Anki Style</title>
+    <title>SQL Master Quiz</title>
     <style>
         :root {
-            --bg-color: #000000;
+            --bg-color: #0d1117;
             --card-bg: #161b22;
-            --text-color: #ffffff;
-            --accent-color: #58a6ff;
-            --correct-color: #238636;
-            --wrong-color: #da3633;
+            --text-color: #c9d1d9;
+            --accent-blue: #58a6ff;   /* WHERE */
+            --accent-yellow: #d29922; /* GROUP BY */
+            --accent-red: #f85149;    /* HAVING */
+            --correct-green: #238636;
             --border-color: #30363d;
         }
 
@@ -27,23 +28,16 @@
             overflow: hidden;
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 15px 20px;
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid var(--border-color);
             background: #000;
         }
 
-        #counter {
-            color: var(--accent-color);
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
+        #counter { color: var(--accent-blue); font-weight: bold; }
 
-        /* Основная часть */
         .main-content {
             flex: 1;
             display: flex;
@@ -54,26 +48,15 @@
             overflow-y: auto;
         }
 
-        #question-box {
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 25px;
-        }
+        #question-box { width: 100%; max-width: 600px; margin-bottom: 20px; }
 
         #question-text {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 10px;
+            color: #ffffff;
         }
 
-        .hint {
-            font-size: 0.9rem;
-            color: #888;
-            margin-bottom: 20px;
-        }
-
-        /* Сетка вариантов */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -86,139 +69,101 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             color: white;
-            padding: 20px;
-            font-size: 1.1rem;
+            padding: 18px;
+            font-size: 1.05rem;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.2s;
             text-align: left;
-            font-family: 'Courier New', monospace;
-            position: relative;
         }
 
-        .opt-btn:active {
-            transform: scale(0.98);
-        }
+        /* Цвета для подсказок */
+        .color-where { border-left: 5px solid var(--accent-blue) !important; }
+        .color-group { border-left: 5px solid var(--accent-yellow) !important; }
+        .color-having { border-left: 5px solid var(--accent-red) !important; }
 
-        /* Цвета ответов */
-        .correct { 
-            background-color: var(--correct-color) !important; 
-            border-color: #3fb950 !important;
-            box-shadow: 0 0 15px rgba(35, 134, 54, 0.4);
-        }
+        .correct { background-color: var(--correct-green) !important; border-color: #3fb950; }
+        .wrong { background-color: #da3633 !important; opacity: 0.7; }
 
-        .wrong { 
-            background-color: var(--wrong-color) !important; 
-            border-color: #f85149 !important;
-            opacity: 0.8;
-        }
-
-        /* Футер */
-        .footer {
-            padding: 20px;
-            border-top: 1px solid #222;
-            display: flex;
-            justify-content: center;
-        }
+        .footer { padding: 20px; border-top: 1px solid var(--border-color); }
 
         #next-btn {
-            width: 100%;
-            max-width: 600px;
-            height: 65px;
-            background-color: #1f6feb;
-            border: none;
-            color: white;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border-radius: 14px;
-            display: none; /* Скрыто до правильного ответа */
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(31, 111, 235, 0.3);
-        }
-
-        /* Адаптивность для мобилок */
-        @media (max-width: 600px) {
-            #question-text { font-size: 1.3rem; }
-            .opt-btn { padding: 15px; font-size: 0.95rem; }
-            #next-btn { height: 60px; font-size: 1.2rem; }
+            width: 100%; max-width: 600px; height: 60px;
+            background-color: var(--accent-blue);
+            border: none; color: white; font-size: 1.3rem;
+            font-weight: bold; border-radius: 12px; display: none;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-size: 1.5rem;">☰</div>
-    <div id="counter">1 / 40</div>
-    <div style="font-size: 1.5rem;">⋮</div>
+    <div style="color: var(--accent-blue)">SQL Theory</div>
+    <div id="counter">1 / 16</div>
+    <div style="font-size: 1.2rem;">⋮</div>
 </div>
 
 <div class="main-content">
     <div id="question-box">
-        <div id="question-text">Загрузка вопроса...</div>
-        <div class="hint">Выберите правильный SQL-код:</div>
+        <div id="question-text">Загрузка...</div>
     </div>
-
-    <div id="options" class="options-grid">
-        </div>
+    <div id="options" class="options-grid"></div>
 </div>
 
-<div class="footer">
-    <button id="next-btn" onclick="nextQuestion()">ДАЛЕЕ →</button>
+<div class="footer" style="display: flex; justify-content: center;">
+    <button id="next-btn" onclick="nextQuestion()">СЛЕДУЮЩИЙ →</button>
 </div>
 
 <script>
     const quizData = [
-        // ТВОИ 4 ЗАДАЧИ (ПРИОРИТЕТ)
+        // ТВОИ НОВЫЕ ТЕОРЕТИЧЕСКИЕ ВОПРОСЫ
         { 
-            q: "№1: Сгруппировать по категориям, средний вес (AVG weight) <= 0.7", 
-            a: "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
+            q: "В чем разница между WHERE и HAVING?", 
+            a: "WHERE фильтрует строки до групп, HAVING — после выполнения GROUP BY",
+            type: "theory",
             variants: [
-                "WHERE weight <= 0.7 GROUP BY category_id", 
-                "GROUP BY category_id HAVING AVG(weight) <= 0.7", 
-                "ORDER BY weight HAVING AVG <= 0.7", 
-                "GROUP BY weight HAVING category_id <= 0.7"
-            ] 
+                "HAVING фильтрует строки до групп, WHERE — после",
+                "WHERE фильтрует строки до групп, HAVING — после выполнения GROUP BY",
+                "Разницы нет, это синонимы",
+                "WHERE работает только с числами, HAVING — только с текстом"
+            ]
         },
         { 
-            q: "№2: Средняя цена (AVG price) > 200 по производителям", 
-            a: "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
+            q: "Как работает команда GROUP BY?", 
+            a: "«Схлопывает» все строки с одинаковым значением в одну строку-группу",
+            type: "theory",
             variants: [
-                "GROUP BY price HAVING AVG(manufacturer_id) > 200", 
-                "GROUP BY manufacturer_id HAVING AVG(price) > 200", 
-                "WHERE price > 200 GROUP BY manufacturer_id", 
-                "HAVING AVG(price) > 200"
-            ] 
+                "Сортирует таблицу по алфавиту",
+                "Удаляет все данные из таблицы",
+                "«Схлопывает» все строки с одинаковым значением в одну строку-группу",
+                "Меняет название столбцов"
+            ]
         },
         { 
-            q: "№3: Общая стоимость (SUM price) по категориям < 250", 
-            a: "GROUP BY category_id HAVING SUM(price) < 250", 
+            q: "Почему при GROUP BY category_id нельзя просто вывести name?", 
+            a: "В группе много разных имен, и SQL не знает, какое именно показать",
+            type: "theory",
             variants: [
-                "GROUP BY category_id HAVING SUM(price) < 250", 
-                "WHERE SUM(price) < 250 GROUP BY category_id", 
-                "GROUP BY price HAVING category_id < 250", 
-                "SELECT SUM(price) < 250"
-            ] 
+                "Потому что name — это зарезервированное слово",
+                "В группе много разных имен, и SQL не знает, какое именно показать",
+                "Названия столбцов всегда должны быть короткими",
+                "Потому что GROUP BY работает только с ID"
+            ]
         },
         { 
-            q: "№4: Макс. рейтинг (MAX rating) по производителям >= 4.0", 
-            a: "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
+            q: "Можно ли использовать HAVING без GROUP BY?", 
+            a: "Да, но тогда вся таблица будет считаться одной большой группой",
+            type: "theory",
             variants: [
-                "ORDER BY rating DESC LIMIT 4", 
-                "WHERE rating >= 4.0 GROUP BY manufacturer_id", 
-                "GROUP BY manufacturer_id HAVING MAX(rating) >= 4.0", 
-                "GROUP BY rating HAVING MAX >= 4.0"
-            ] 
+                "Нет, это вызовет ошибку синтаксиса",
+                "Да, но тогда вся таблица будет считаться одной большой группой",
+                "Да, это стандартный способ фильтрации строк",
+                "HAVING всегда превращается в WHERE автоматически"
+            ]
         },
-
-        // БАЗОВЫЕ ЗНАНИЯ SQL
-        { q: "Фильтрация ГРУПП (после GROUP BY)", a: "HAVING", variants: ["WHERE", "HAVING", "LIMIT", "ORDER"] },
-        { q: "Удаление таблицы целиком (структура + данные)", a: "DROP TABLE", variants: ["DELETE", "TRUNCATE", "DROP TABLE", "REMOVE"] },
-        { q: "Очистка данных БЕЗ удаления таблицы", a: "TRUNCATE", variants: ["DROP", "TRUNCATE", "CLEAR", "DELETE *"] },
-        { q: "Выбор только уникальных значений", a: "DISTINCT", variants: ["UNIQUE", "DISTINCT", "ONLY", "SINGLE"] },
-        { q: "Поиск по шаблону (текст)", a: "LIKE", variants: ["SEARCH", "MATCH", "LIKE", "FIND"] },
-        { q: "Сортировка от Я до А (убывание)", a: "ORDER BY ... DESC", variants: ["ORDER BY ... ASC", "SORT DESC", "ORDER BY ... DESC", "GROUP BY DESC"] },
-        { q: "Объединение по совпадающим ключам", a: "INNER JOIN", variants: ["LEFT JOIN", "INNER JOIN", "UNION", "OUTER JOIN"] },
-        { q: "Проверка на пустую ячейку", a: "IS NULL", variants: ["== NULL", "IS EMPTY", "IS NULL", "IF NULL"] }
+        // ПРАКТИЧЕСКИЕ ЗАДАЧИ №1-№4
+        { q: "Задача №1: AVG(weight) <= 0.7 по категориям", a: "GROUP BY category_id HAVING AVG(weight) <= 0.7", variants: ["WHERE weight <= 0.7", "GROUP BY category_id HAVING AVG(weight) <= 0.7", "ORDER BY weight", "LIMIT 0.7"] },
+        { q: "Задача №3: Общая сумма (SUM price) < 250 по категориям", a: "GROUP BY category_id HAVING SUM(price) < 250", variants: ["GROUP BY category_id HAVING SUM(price) < 250", "WHERE SUM < 250", "HAVING COUNT < 250", "GROUP BY SUM"] }
     ];
 
     let current = 0;
@@ -234,32 +179,28 @@
         const optionsDiv = document.getElementById('options');
         optionsDiv.innerHTML = '';
 
-        // Перемешивание вариантов для интереса
-        const shuffledVariants = [...data.variants].sort(() => Math.random() - 0.5);
-        
-        shuffledVariants.forEach(v => {
+        data.variants.forEach(v => {
             const btn = document.createElement('button');
             btn.className = 'opt-btn';
+            
+            // Добавляем цветовую схему
+            if (v.includes("WHERE")) btn.classList.add('color-where');
+            if (v.includes("GROUP BY")) btn.classList.add('color-group');
+            if (v.includes("HAVING")) btn.classList.add('color-having');
+
             btn.innerText = v;
-            btn.onclick = () => check(btn, v);
+            btn.onclick = () => {
+                if (locked) return;
+                if (v === data.a) {
+                    btn.classList.add('correct');
+                    document.getElementById('next-btn').style.display = 'block';
+                    locked = true;
+                } else {
+                    btn.classList.add('wrong');
+                }
+            };
             optionsDiv.appendChild(btn);
         });
-    }
-
-    function check(btn, val) {
-        if (locked) return;
-        const correct = quizData[current].a;
-        
-        if (val === correct) {
-            btn.classList.add('correct');
-            document.getElementById('next-btn').style.display = 'block';
-            locked = true;
-            // Вибрация (если поддерживается)
-            if (window.navigator.vibrate) window.navigator.vibrate(50);
-        } else {
-            btn.classList.add('wrong');
-            if (window.navigator.vibrate) window.navigator.vibrate([50, 50]);
-        }
     }
 
     function nextQuestion() {
