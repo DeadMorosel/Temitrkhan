@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SQL Anki Mobile Ready</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            /* Предотвращает выделение текста при тапах на мобилке */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Шапка */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #222;
+            background: #000;
+            z-index: 10;
+        }
+
+        #counter {
+            color: #58a6ff;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Контентная область */
+        .card-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Адаптивный шрифт для команд */
+        #sql-command {
+            font-size: 3rem; 
+            font-weight: 900;
+            line-height: 1.2;
+            width: 100%;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+        }
+
+        #line {
+            width: 80%;
+            height: 2px;
+            background-color: #333;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Адаптивный шрифт для ответов */
+        #description {
+            font-size: 1.8rem;
+            color: #58a6ff;
+            display: none;
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            white-space: pre-wrap;
+            border: 1px solid #30363d;
+            width: 90%;
+            box-sizing: border-box;
+        }
+
+        /* Нижняя панель */
+        .footer {
+            padding: 15px;
+            background: #000;
+            border-top: 1px solid #222;
+        }
+
+        button {
+            width: 100%;
+            height: 70px; /* Оптимальная высота для пальца */
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            color: #ffffff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 12px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+            background-color: #30363d;
+        }
+
+        #next-btn {
+            background-color: #1f6feb;
+            display: none;
+            border: none;
+        }
+
+        /* МЕДИА-ЗАПРОСЫ ДЛЯ ТЕЛЕФОНОВ (Масштабируемость) */
+        @media (max-width: 600px) {
+            #sql-command {
+                font-size: 2.2rem; /* Уменьшаем на очень маленьких экранах */
+            }
+            #description {
+                font-size: 1.4rem;
+            }
+            .footer {
+                height: 90px;
+            }
+            button {
+                font-size: 1.2rem;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div style="font-size: 1.5rem;">☰</div>
+    <div id="counter">1 / 41</div>
+    <div style="font-size: 1.5rem;">⋮</div>
+</div>
+
+<div class="card-area">
+    <div id="sql-command">Загрузка...</div>
+    <div id="line"></div>
+    <div id="description"></div>
+</div>
+
+<div class="footer">
+    <button id="show-btn" onclick="show()">Показать ответ</button>
+    <button id="next-btn" onclick="next()">Далее →</button>
+</div>
+
+<script>
+    const cards = [
+        { cmd: "SELECT", desc: "Выбирает данные из базы" },
+        { cmd: "INSERT INTO", desc: "Добавляет новые строки" },
+        { cmd: "UPDATE", desc: "Изменяет данные" },
+        { cmd: "DELETE", desc: "Удаляет записи" },
+        { cmd: "WHERE", desc: "Фильтр ДО группировки" },
+        { cmd: "ORDER BY", desc: "Сортировка строк" },
+        { cmd: "GROUP BY", desc: "Группировка строк" },
+        { cmd: "HAVING", desc: "Фильтр ПОСЛЕ группировки" },
+        { cmd: "JOIN", desc: "Объединение таблиц" },
+        { cmd: "DISTINCT", desc: "Только уникальные значения" },
+        { cmd: "LIMIT", desc: "Ограничение количества" },
+        { cmd: "DROP TABLE", desc: "Удаляет таблицу СОВСЕМ" },
+        { cmd: "TRUNCATE", desc: "Очищает данные (ID в 0)" },
+        { cmd: "COUNT()", desc: "Считает количество строк" },
+        { cmd: "AVG()", desc: "Среднее арифметическое" },
+        { cmd: "SUM()", desc: "Сумма значений" }
+    ];
+
+    let index = 0;
+
+    function show() {
+        document.getElementById('line').style.display = 'block';
+        document.getElementById('description').style.display = 'block';
+        document.getElementById('show-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'block';
+        document.getElementById('description').innerText = cards[index].desc;
+    }
+
+    function next() {
+        index = (index + 1) % cards.length;
+        document.getElementById('line').style.display = 'none';
+        document.getElementById('description').style.display = 'none';
+        document.getElementById('show-btn').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        document.getElementById('sql-command').innerText = cards[index].cmd;
+        document.getElementById('counter').innerText = (index + 1) + " / " + cards.length;
+    }
+
+    window.onload = function() {
+        document.getElementById('sql-command').innerText = cards[0].cmd;
+        document.getElementById('counter').innerText = "1 / " + cards.length;
+    };
+</script>
+
+</body>
+</html>
