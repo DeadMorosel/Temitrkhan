@@ -3,40 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SQL Anki Mobile Ready</title>
+    <title>SQL Quiz Mobile</title>
     <style>
         body {
             background-color: #000000;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* Предотвращает выделение текста при тапах на мобилке */
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
+            padding: 15px 20px;
             border-bottom: 1px solid #222;
-            background: #000;
-            z-index: 10;
-        }
-
-        #counter {
-            color: #58a6ff;
-            font-weight: bold;
             font-size: 1.1rem;
         }
 
-        /* Контентная область */
-        .card-area {
+        #counter { color: #58a6ff; font-weight: bold; }
+
+        .question-area {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -44,157 +34,149 @@
             align-items: center;
             text-align: center;
             padding: 20px;
-            overflow-y: auto;
         }
 
-        /* Адаптивный шрифт для команд */
-        #sql-command {
-            font-size: 3rem; 
-            font-weight: 900;
-            line-height: 1.2;
-            width: 100%;
-            word-wrap: break-word;
-            margin-bottom: 10px;
-        }
-
-        #line {
-            width: 80%;
-            height: 2px;
-            background-color: #333;
-            margin: 20px 0;
-            display: none;
-        }
-
-        /* Адаптивный шрифт для ответов */
-        #description {
+        #question-text {
             font-size: 1.8rem;
-            color: #58a6ff;
-            display: none;
-            background: #0d1117;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            white-space: pre-wrap;
-            border: 1px solid #30363d;
-            width: 90%;
-            box-sizing: border-box;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
         }
 
-        /* Нижняя панель */
-        .footer {
-            padding: 15px;
-            background: #000;
-            border-top: 1px solid #222;
-        }
-
-        button {
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
             width: 100%;
-            height: 70px; /* Оптимальная высота для пальца */
+            max-width: 500px;
+            padding: 10px;
+        }
+
+        .opt-btn {
             background-color: #161b22;
             border: 1px solid #30363d;
-            color: #ffffff;
-            font-size: 1.4rem;
+            color: white;
+            padding: 18px;
+            font-size: 1.2rem;
+            border-radius: 10px;
             cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 12px;
-            transition: background 0.2s, transform 0.1s;
+            transition: 0.2s;
+            text-align: center;
+            font-family: 'Courier New', monospace;
         }
 
-        button:active {
-            transform: scale(0.98);
-            background-color: #30363d;
+        .correct { background-color: #238636 !important; border-color: #2ea043; }
+        .wrong { background-color: #da3633 !important; border-color: #f85149; opacity: 0.7; }
+
+        .footer {
+            padding: 20px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #next-btn {
+            width: 100%;
+            max-width: 500px;
+            height: 60px;
             background-color: #1f6feb;
-            display: none;
             border: none;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 12px;
+            display: none; /* Скрыта, пока не ответишь верно */
         }
 
-        /* МЕДИА-ЗАПРОСЫ ДЛЯ ТЕЛЕФОНОВ (Масштабируемость) */
         @media (max-width: 600px) {
-            #sql-command {
-                font-size: 2.2rem; /* Уменьшаем на очень маленьких экранах */
-            }
-            #description {
-                font-size: 1.4rem;
-            }
-            .footer {
-                height: 90px;
-            }
-            button {
-                font-size: 1.2rem;
-                height: 60px;
-            }
+            #question-text { font-size: 1.4rem; }
+            .opt-btn { padding: 15px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-size: 1.5rem;">☰</div>
-    <div id="counter">1 / 41</div>
-    <div style="font-size: 1.5rem;">⋮</div>
+    <div>SQL Quiz</div>
+    <div id="counter">1 / 40</div>
+    <div>⋮</div>
 </div>
 
-<div class="card-area">
-    <div id="sql-command">Загрузка...</div>
-    <div id="line"></div>
-    <div id="description"></div>
+<div class="question-area">
+    <div id="question-text">Загрузка...</div>
+    <div id="options" class="options-grid">
+        </div>
 </div>
 
 <div class="footer">
-    <button id="show-btn" onclick="show()">Показать ответ</button>
-    <button id="next-btn" onclick="next()">Далее →</button>
+    <button id="next-btn" onclick="nextQuestion()">СЛЕДУЮЩИЙ →</button>
 </div>
 
 <script>
-    const cards = [
-        { cmd: "SELECT", desc: "Выбирает данные из базы" },
-        { cmd: "INSERT INTO", desc: "Добавляет новые строки" },
-        { cmd: "UPDATE", desc: "Изменяет данные" },
-        { cmd: "DELETE", desc: "Удаляет записи" },
-        { cmd: "WHERE", desc: "Фильтр ДО группировки" },
-        { cmd: "ORDER BY", desc: "Сортировка строк" },
-        { cmd: "GROUP BY", desc: "Группировка строк" },
-        { cmd: "HAVING", desc: "Фильтр ПОСЛЕ группировки" },
-        { cmd: "JOIN", desc: "Объединение таблиц" },
-        { cmd: "DISTINCT", desc: "Только уникальные значения" },
-        { cmd: "LIMIT", desc: "Ограничение количества" },
-        { cmd: "DROP TABLE", desc: "Удаляет таблицу СОВСЕМ" },
-        { cmd: "TRUNCATE", desc: "Очищает данные (ID в 0)" },
-        { cmd: "COUNT()", desc: "Считает количество строк" },
-        { cmd: "AVG()", desc: "Среднее арифметическое" },
-        { cmd: "SUM()", desc: "Сумма значений" }
+    const quizData = [
+        // Задачи 4.9 - 4.10
+        { q: "Средний вес (AVG weight) <= 0.7 по категориям", a: "HAVING AVG(weight) <= 0.7", variants: ["WHERE weight <= 0.7", "HAVING AVG(weight) <= 0.7", "GROUP BY weight <= 0.7", "LIMIT 0.7"] },
+        { q: "Средняя цена (AVG price) > 200 по производителям", a: "HAVING AVG(price) > 200", variants: ["WHERE price > 200", "HAVING AVG(price) > 200", "ORDER BY price", "SUM(price) > 200"] },
+        { q: "Общая сумма (SUM price) < 250", a: "HAVING SUM(price) < 250", variants: ["HAVING SUM(price) < 250", "WHERE SUM < 250", "GROUP BY 250", "SELECT SUM < 250"] },
+        { q: "Макс. рейтинг (MAX rating) >= 4.0", a: "HAVING MAX(rating) >= 4.0", variants: ["WHERE rating >= 4.0", "ORDER BY 4.0", "HAVING MAX(rating) >= 4.0", "DISTINCT 4.0"] },
+        
+        // База
+        { q: "Какая команда фильтрует ГРУППЫ?", a: "HAVING", variants: ["WHERE", "HAVING", "GROUP BY", "FILTER"] },
+        { q: "Какая команда удаляет таблицу СОВСЕМ?", a: "DROP TABLE", variants: ["DELETE", "TRUNCATE", "DROP TABLE", "REMOVE"] },
+        { q: "Выбор только уникальных значений", a: "DISTINCT", variants: ["UNIQUE", "SINGLE", "DISTINCT", "ONLY"] },
+        { q: "Сортировка от большего к меньшему", a: "ORDER BY ... DESC", variants: ["ORDER BY ... ASC", "SORT BY DESC", "ORDER BY ... DESC", "GROUP BY DESC"] },
+        { q: "Добавление новой строки", a: "INSERT INTO", variants: ["ADD ROW", "INSERT INTO", "UPDATE", "CREATE"] },
+        { q: "Обновление данных", a: "UPDATE", variants: ["CHANGE", "SET", "MODIFY", "UPDATE"] },
+        { cmd: "COUNT()", q: "Что делает функция COUNT()?", a: "Считает количество строк", variants: ["Считает сумму", "Считает среднее", "Считает количество строк", "Ищет максимум"] },
+        { q: "Поиск по шаблону (например, имен на 'А')", a: "LIKE", variants: ["IN", "LIKE", "BETWEEN", "SEARCH"] },
+        { q: "Проверка на пустое значение", a: "IS NULL", variants: ["== NULL", "EMPTY", "IS NULL", "IF NULL"] },
+        { q: "Объединение таблиц по совпадениям", a: "INNER JOIN", variants: ["OUTER JOIN", "INNER JOIN", "UNION", "LEFT JOIN"] },
+        { q: "Очистка данных БЕЗ удаления таблицы", a: "TRUNCATE", variants: ["DELETE ALL", "DROP", "TRUNCATE", "CLEAR"] },
+        { q: "Псевдоним для колонки", a: "AS", variants: ["NAME", "ALIAS", "AS", "SET"] }
     ];
 
-    let index = 0;
+    let current = 0;
+    let locked = false;
 
-    function show() {
-        document.getElementById('line').style.display = 'block';
-        document.getElementById('description').style.display = 'block';
-        document.getElementById('show-btn').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'block';
-        document.getElementById('description').innerText = cards[index].desc;
-    }
-
-    function next() {
-        index = (index + 1) % cards.length;
-        document.getElementById('line').style.display = 'none';
-        document.getElementById('description').style.display = 'none';
-        document.getElementById('show-btn').style.display = 'block';
+    function loadQuestion() {
+        locked = false;
+        const data = quizData[current];
+        document.getElementById('question-text').innerText = data.q;
+        document.getElementById('counter').innerText = (current + 1) + " / " + quizData.length;
         document.getElementById('next-btn').style.display = 'none';
         
-        document.getElementById('sql-command').innerText = cards[index].cmd;
-        document.getElementById('counter').innerText = (index + 1) + " / " + cards.length;
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        
+        data.variants.forEach(v => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = v;
+            btn.onclick = () => checkAnswer(btn, v);
+            optionsDiv.appendChild(btn);
+        });
     }
 
-    window.onload = function() {
-        document.getElementById('sql-command').innerText = cards[0].cmd;
-        document.getElementById('counter').innerText = "1 / " + cards.length;
-    };
+    function checkAnswer(btn, value) {
+        if (locked) return;
+        const correctAns = quizData[current].a;
+        
+        if (value === correctAns) {
+            btn.classList.add('correct');
+            document.getElementById('next-btn').style.display = 'block';
+            locked = true;
+        } else {
+            btn.classList.add('wrong');
+        }
+    }
+
+    function nextQuestion() {
+        current = (current + 1) % quizData.length;
+        loadQuestion();
+    }
+
+    window.onload = loadQuestion;
 </script>
 
 </body>
